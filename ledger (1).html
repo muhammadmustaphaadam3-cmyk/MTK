@@ -1,0 +1,382 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12151c;
+    --panel:#1a1f29;
+    --panel-alt:#212836;
+    --line:#2c3341;
+    --text:#ece8dd;
+    --text-dim:#8b93a3;
+    --gold:#d4a94e;
+    --teal:#4fa8a0;
+    --rose:#c4547a;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:transparent;color:var(--text);font-family:'Inter',sans-serif;}
+  .app{background:var(--ink);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-height:640px;}
+
+  /* Ticker */
+  .ticker-wrap{background:var(--panel-alt);border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;height:34px;display:flex;align-items:center;}
+  .ticker{display:inline-flex;align-items:center;animation:scroll 32s linear infinite;padding-left:100%;}
+  .ticker span{margin-right:44px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--text-dim);}
+  .ticker span b{color:var(--text);font-weight:600;}
+  .tick-trade{color:var(--gold);}
+  .tick-study{color:var(--teal);}
+  .tick-task{color:var(--rose);}
+  @keyframes scroll{ from{transform:translateX(0);} to{transform:translateX(-100%);} }
+
+  /* Header */
+  .head{display:flex;align-items:baseline;justify-content:space-between;padding:22px 28px 14px;border-bottom:1px solid var(--line);}
+  .head h1{font-family:'Fraunces',serif;font-weight:700;font-size:26px;margin:0;letter-spacing:.2px;}
+  .head .date{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--text-dim);}
+
+  /* Tabs */
+  .tabs{display:flex;gap:2px;padding:0 24px;border-bottom:1px solid var(--line);background:var(--panel);}
+  .tab{padding:12px 18px;font-size:13.5px;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;font-weight:500;user-select:none;}
+  .tab:hover{color:var(--text);}
+  .tab.active{color:var(--text);border-bottom-color:var(--gold);}
+
+  .content{padding:24px 28px 32px;}
+  .panel-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin:0 0 4px;}
+  .panel-sub{color:var(--text-dim);font-size:12.5px;margin:0 0 18px;}
+
+  /* Overview grid */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;}
+  .stat .label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+  .stat .value{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;}
+  .stat.gold .value{color:var(--gold);}
+  .stat.teal .value{color:var(--teal);}
+  .stat.rose .value{color:var(--rose);}
+
+  .row{display:grid;grid-template-columns:1.4fr .6fr .8fr;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .row:last-child{border-bottom:none;}
+  .row .tag{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:20px;width:fit-content;font-weight:600;}
+  .tag.gold{background:rgba(212,169,78,.14);color:var(--gold);}
+  .tag.teal{background:rgba(79,168,160,.14);color:var(--teal);}
+  .tag.rose{background:rgba(196,84,122,.14);color:var(--rose);}
+  .row .when{color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:12px;text-align:right;}
+  .empty{color:var(--text-dim);font-size:13px;padding:18px 0;font-style:italic;}
+
+  /* Forms */
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;}
+  .form-grid.wide{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));}
+  label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);margin-bottom:5px;}
+  input,select,textarea{width:100%;background:var(--panel-alt);border:1px solid var(--line);border-radius:5px;color:var(--text);padding:8px 9px;font-size:13px;font-family:'Inter',sans-serif;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);}
+  .form-grid .full{grid-column:1/-1;}
+  button{background:var(--gold);color:#1a1206;border:none;border-radius:6px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+  button:hover{filter:brightness(1.08);}
+  button.ghost{background:transparent;border:1px solid var(--line);color:var(--text-dim);padding:5px 10px;font-size:11.5px;}
+  button.ghost:hover{color:var(--rose);border-color:var(--rose);}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);padding:6px 8px;border-bottom:1px solid var(--line);font-weight:500;}
+  td{padding:9px 8px;border-bottom:1px solid var(--line);}
+  tr:last-child td{border-bottom:none;}
+  .pos{color:#7dc4a0;} .neg{color:var(--rose);}
+  .done{opacity:.42;text-decoration:line-through;}
+  .check{width:16px;height:16px;cursor:pointer;accent-color:var(--gold);}
+  .routine-card{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:8px;}
+  .streak{font-family:'IBM Plex Mono',monospace;color:var(--teal);font-size:12px;}
+  .section-gap{margin-top:26px;}
+</style>
+
+<div class="app">
+  <div class="ticker-wrap"><div class="ticker" id="tickerEl"></div></div>
+  <div class="head">
+    <h1>Ledger</h1>
+    <div class="date" id="dateEl"></div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" data-tab="overview">Overview</div>
+    <div class="tab" data-tab="trading">Trading</div>
+    <div class="tab" data-tab="study">Study</div>
+    <div class="tab" data-tab="tasks">Tasks &amp; Routines</div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+const STORAGE_KEY = 'ledger-data';
+let data = { trades: [], assignments: [], sessions: [], tasks: [], routines: [] };
+let activeTab = 'overview';
+
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function fmtDate(d){
+  if(!d) return '—';
+  const dt = new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+function daysUntil(d){
+  const dt = new Date(d+'T00:00:00'); const now = new Date(); now.setHours(0,0,0,0);
+  return Math.round((dt-now)/86400000);
+}
+
+async function load(){
+  try{
+    const r = await window.storage.get(STORAGE_KEY, false);
+    if(r && r.value){ data = JSON.parse(r.value); }
+  }catch(e){ /* no data yet */ }
+  render();
+}
+async function save(){
+  try{ await window.storage.set(STORAGE_KEY, JSON.stringify(data), false); }
+  catch(e){ console.error('save failed', e); }
+}
+
+document.getElementById('dateEl').textContent = new Date().toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric', year:'numeric'});
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    activeTab = t.dataset.tab;
+    render();
+  });
+});
+
+function buildTicker(){
+  const items = [];
+  data.trades.filter(t=>!t.exit).forEach(t=>{
+    items.push(`<span class="tick-trade">● OPEN <b>${t.symbol}</b> ${t.direction} @ ${t.entry}</span>`);
+  });
+  data.assignments.filter(a=>!a.done).sort((a,b)=>a.due.localeCompare(b.due)).slice(0,4).forEach(a=>{
+    const du = daysUntil(a.due);
+    items.push(`<span class="tick-study">◆ ${a.subject}: <b>${a.title}</b> — ${du<0?'overdue':du===0?'due today':`in ${du}d`}</span>`);
+  });
+  data.tasks.filter(t=>!t.done && t.due===todayStr()).forEach(t=>{
+    items.push(`<span class="tick-task">▲ TODAY <b>${t.title}</b></span>`);
+  });
+  if(items.length===0){ items.push(`<span>Nothing pressing on the ledger right now.</span>`); }
+  document.getElementById('tickerEl').innerHTML = items.join('') + items.join('');
+}
+
+function switchIcon(cat){ return cat==='trading'?'gold':cat==='study'?'teal':'rose'; }
+
+function renderOverview(){
+  const openTrades = data.trades.filter(t=>!t.exit).length;
+  const closedTrades = data.trades.filter(t=>t.exit);
+  const wins = closedTrades.filter(t=>parseFloat(t.pnl)>0).length;
+  const winRate = closedTrades.length ? Math.round(100*wins/closedTrades.length) : 0;
+  const pendingAssign = data.assignments.filter(a=>!a.done).length;
+  const openTasks = data.tasks.filter(t=>!t.done).length;
+
+  let upcoming = [];
+  data.trades.filter(t=>!t.exit).forEach(t=>upcoming.push({cat:'trading',label:`${t.symbol} — ${t.direction} open`, when:fmtDate(t.date), sort:t.date}));
+  data.assignments.filter(a=>!a.done).forEach(a=>upcoming.push({cat:'study',label:`${a.subject}: ${a.title}`, when:fmtDate(a.due), sort:a.due}));
+  data.tasks.filter(t=>!t.done).forEach(t=>upcoming.push({cat:'tasks',label:t.title, when:t.due?fmtDate(t.due):'no date', sort:t.due||'9999'}));
+  upcoming.sort((a,b)=>a.sort.localeCompare(b.sort));
+
+  document.getElementById('content').innerHTML = `
+    <div class="grid3">
+      <div class="stat gold"><div class="label">Open Trades</div><div class="value">${openTrades}</div></div>
+      <div class="stat gold"><div class="label">Win Rate</div><div class="value">${closedTrades.length?winRate+'%':'—'}</div></div>
+      <div class="stat teal"><div class="label">Pending Assignments</div><div class="value">${pendingAssign}</div></div>
+      <div class="stat rose"><div class="label">Open Tasks</div><div class="value">${openTasks}</div></div>
+    </div>
+    <p class="panel-title">What's on the ledger</p>
+    <p class="panel-sub">Across trading, study and daily tasks, soonest first.</p>
+    ${upcoming.length ? upcoming.map(u=>`
+      <div class="row">
+        <div>${u.label}</div>
+        <div class="tag ${switchIcon(u.cat)}">${u.cat}</div>
+        <div class="when">${u.when}</div>
+      </div>
+    `).join('') : '<div class="empty">Nothing logged yet — add a trade, assignment, or task to see it here.</div>'}
+  `;
+}
+
+function renderTrading(){
+  const rows = [...data.trades].sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('content').innerHTML = `
+    <p class="panel-title">Trade Journal</p>
+    <p class="panel-sub">Log entries and exits. Discipline notes matter more than the P&amp;L line.</p>
+    <div class="form-grid wide">
+      <div><label>Date</label><input type="date" id="t_date" value="${todayStr()}"></div>
+      <div><label>Symbol</label><input id="t_symbol" placeholder="EURUSD"></div>
+      <div><label>Direction</label><select id="t_dir"><option>Long</option><option>Short</option></select></div>
+      <div><label>Entry</label><input type="number" step="any" id="t_entry"></div>
+      <div><label>Exit (blank if open)</label><input type="number" step="any" id="t_exit"></div>
+      <div><label>P&amp;L</label><input type="number" step="any" id="t_pnl"></div>
+      <div><label>Discipline (1-5)</label><input type="number" min="1" max="5" id="t_disc"></div>
+      <div class="full"><label>Notes / setup / emotion</label><textarea id="t_notes" rows="2" placeholder="Why this trade, how it felt, what to repeat or avoid"></textarea></div>
+      <div class="full"><button onclick="addTrade()">Log trade</button></div>
+    </div>
+    <table>
+      <tr><th>Date</th><th>Symbol</th><th>Dir</th><th>Entry</th><th>Exit</th><th>P&amp;L</th><th>Disc.</th><th>Notes</th><th></th></tr>
+      ${rows.map(t=>`
+        <tr>
+          <td>${fmtDate(t.date)}</td>
+          <td>${t.symbol}</td>
+          <td>${t.direction}</td>
+          <td>${t.entry}</td>
+          <td>${t.exit||'open'}</td>
+          <td class="${parseFloat(t.pnl)>0?'pos':parseFloat(t.pnl)<0?'neg':''}">${t.pnl||'—'}</td>
+          <td>${t.disc||'—'}</td>
+          <td>${t.notes||''}</td>
+          <td><button class="ghost" onclick="removeItem('trades','${t.id}')">remove</button></td>
+        </tr>
+      `).join('') || `<tr><td colspan="9" class="empty">No trades logged yet.</td></tr>`}
+    </table>
+  `;
+}
+function addTrade(){
+  const symbol = document.getElementById('t_symbol').value.trim();
+  if(!symbol) return;
+  data.trades.push({
+    id: uid(),
+    date: document.getElementById('t_date').value || todayStr(),
+    symbol, direction: document.getElementById('t_dir').value,
+    entry: document.getElementById('t_entry').value,
+    exit: document.getElementById('t_exit').value,
+    pnl: document.getElementById('t_pnl').value,
+    disc: document.getElementById('t_disc').value,
+    notes: document.getElementById('t_notes').value
+  });
+  save(); render();
+}
+
+function renderStudy(){
+  const assignments = [...data.assignments].sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999'));
+  const sessions = [...data.sessions].sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('content').innerHTML = `
+    <p class="panel-title">Assignments &amp; Deadlines</p>
+    <div class="form-grid">
+      <div><label>Subject</label><input id="a_subject" placeholder="Statistics"></div>
+      <div><label>Title</label><input id="a_title" placeholder="Problem set 4"></div>
+      <div><label>Due date</label><input type="date" id="a_due"></div>
+      <div><label>&nbsp;</label><button onclick="addAssignment()">Add</button></div>
+    </div>
+    <table>
+      <tr><th></th><th>Subject</th><th>Title</th><th>Due</th><th></th></tr>
+      ${assignments.map(a=>`
+        <tr class="${a.done?'done':''}">
+          <td><input type="checkbox" class="check" ${a.done?'checked':''} onchange="toggleDone('assignments','${a.id}')"></td>
+          <td>${a.subject}</td>
+          <td>${a.title}</td>
+          <td>${fmtDate(a.due)}</td>
+          <td><button class="ghost" onclick="removeItem('assignments','${a.id}')">remove</button></td>
+        </tr>
+      `).join('') || `<tr><td colspan="5" class="empty">No assignments yet.</td></tr>`}
+    </table>
+
+    <p class="panel-title section-gap">Study Sessions</p>
+    <div class="form-grid">
+      <div><label>Date</label><input type="date" id="s_date" value="${todayStr()}"></div>
+      <div><label>Subject</label><input id="s_subject" placeholder="Statistics"></div>
+      <div><label>Minutes</label><input type="number" id="s_minutes"></div>
+      <div><label>&nbsp;</label><button onclick="addSession()">Log session</button></div>
+    </div>
+    <table>
+      <tr><th>Date</th><th>Subject</th><th>Minutes</th><th></th></tr>
+      ${sessions.map(s=>`
+        <tr>
+          <td>${fmtDate(s.date)}</td><td>${s.subject}</td><td>${s.minutes}</td>
+          <td><button class="ghost" onclick="removeItem('sessions','${s.id}')">remove</button></td>
+        </tr>
+      `).join('') || `<tr><td colspan="4" class="empty">No study sessions logged yet.</td></tr>`}
+    </table>
+  `;
+}
+function addAssignment(){
+  const title = document.getElementById('a_title').value.trim();
+  if(!title) return;
+  data.assignments.push({ id: uid(), subject: document.getElementById('a_subject').value||'General', title, due: document.getElementById('a_due').value||todayStr(), done:false });
+  save(); render();
+}
+function addSession(){
+  const subject = document.getElementById('s_subject').value.trim();
+  if(!subject) return;
+  data.sessions.push({ id: uid(), date: document.getElementById('s_date').value||todayStr(), subject, minutes: document.getElementById('s_minutes').value||0 });
+  save(); render();
+}
+
+function renderTasks(){
+  const tasks = [...data.tasks].sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999'));
+  document.getElementById('content').innerHTML = `
+    <p class="panel-title">Daily Tasks</p>
+    <div class="form-grid">
+      <div><label>Task</label><input id="k_title" placeholder="Review overnight positions"></div>
+      <div><label>Due</label><input type="date" id="k_due" value="${todayStr()}"></div>
+      <div><label>Priority</label><select id="k_priority"><option>Low</option><option selected>Medium</option><option>High</option></select></div>
+      <div><label>&nbsp;</label><button onclick="addTask()">Add</button></div>
+    </div>
+    <table>
+      <tr><th></th><th>Task</th><th>Due</th><th>Priority</th><th></th></tr>
+      ${tasks.map(t=>`
+        <tr class="${t.done?'done':''}">
+          <td><input type="checkbox" class="check" ${t.done?'checked':''} onchange="toggleDone('tasks','${t.id}')"></td>
+          <td>${t.title}</td>
+          <td>${fmtDate(t.due)}</td>
+          <td>${t.priority}</td>
+          <td><button class="ghost" onclick="removeItem('tasks','${t.id}')">remove</button></td>
+        </tr>
+      `).join('') || `<tr><td colspan="5" class="empty">No tasks yet.</td></tr>`}
+    </table>
+
+    <p class="panel-title section-gap">Routines</p>
+    <div class="form-grid">
+      <div class="full"><label>New routine</label><input id="r_title" placeholder="Morning market review"></div>
+      <div class="full"><button onclick="addRoutine()">Add routine</button></div>
+    </div>
+    ${data.routines.map(r=>`
+      <div class="routine-card">
+        <div>
+          <input type="checkbox" class="check" ${r.lastDone===todayStr()?'checked':''} onchange="toggleRoutine('${r.id}')">
+          <span style="margin-left:8px;${r.lastDone===todayStr()?'opacity:.5;text-decoration:line-through':''}">${r.title}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="streak">streak: ${r.streak||0}</span>
+          <button class="ghost" onclick="removeItem('routines','${r.id}')">remove</button>
+        </div>
+      </div>
+    `).join('') || '<div class="empty">No routines yet — add one to start a streak.</div>'}
+  `;
+}
+function addTask(){
+  const title = document.getElementById('k_title').value.trim();
+  if(!title) return;
+  data.tasks.push({ id: uid(), title, due: document.getElementById('k_due').value, priority: document.getElementById('k_priority').value, done:false });
+  save(); render();
+}
+function addRoutine(){
+  const title = document.getElementById('r_title').value.trim();
+  if(!title) return;
+  data.routines.push({ id: uid(), title, streak:0, lastDone:null });
+  save(); render();
+}
+function toggleRoutine(id){
+  const r = data.routines.find(x=>x.id===id);
+  const today = todayStr();
+  if(r.lastDone===today){ r.lastDone=null; r.streak=Math.max(0,(r.streak||0)-1); }
+  else{
+    const yest = new Date(Date.now()-86400000).toISOString().slice(0,10);
+    r.streak = (r.lastDone===yest) ? (r.streak||0)+1 : 1;
+    r.lastDone = today;
+  }
+  save(); render();
+}
+
+function toggleDone(col,id){
+  const item = data[col].find(x=>x.id===id);
+  item.done = !item.done;
+  save(); render();
+}
+function removeItem(col,id){
+  data[col] = data[col].filter(x=>x.id!==id);
+  save(); render();
+}
+
+function render(){
+  buildTicker();
+  if(activeTab==='overview') renderOverview();
+  else if(activeTab==='trading') renderTrading();
+  else if(activeTab==='study') renderStudy();
+  else renderTasks();
+}
+
+load();
+</script>
